@@ -1,0 +1,29 @@
+@import 'base.css';
+@import 'variables.css';
+@import 'form-styles.css';
+
+.container {
+   margin: 0 auto;
+   max-width: 80rem;
+   padding: var(--padding-primary);
+}
+.title {
+   font-size: 1.7rem;
+   font-weight: 600;
+}
+
+.badge {
+   display: inline-flex;
+   align-items: center;
+   gap: 0.25rem;
+   padding: 0.15rem 0.45rem;
+   font-size: 0.65rem;
+   font-weight: 600;
+   letter-spacing: 0.04em;
+   text-transform: uppercase;
+   color: var(--muted-text);
+   background: var(--muted-foreground);
+   border: 1.5px solid var(--border-color);
+   border-radius: calc(var(--border-radius) * 0.6);
+   white-space: nowrap;
+}

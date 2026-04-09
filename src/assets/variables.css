@@ -1,0 +1,48 @@
+:root {
+   --text: #262626;
+   --muted-text: #6b7280;
+   --background: #f8f8fd;
+   --foreground: #ffffff;
+   --muted-foreground: #fafafa;
+   --accent: #3cd48d;
+   --transparent-accent: #3cd48d9b;
+   --on-accent: #ffffff;
+   --muted-accent: #d0f5e8;
+   --on-muted-accent: #1a7a4a;
+   --warn: #ff992d;
+   --muted-warn: #ffe8d0;
+   --success: #3cd48d;
+   --muted-success: #d9f9e9;
+   --destructive: #c33;
+   --muted-destructive: #ffd0d0;
+
+   --border-color: #f0f0f0;
+
+   --border-radius: 0.7rem;
+   --width-sidebar: 15rem;
+   --height-header: 4.5rem;
+   --padding-primary: 1.45rem;
+   --padding-secondary: 0.71rem;
+   --gap-primary: 0.71rem;
+   --gap-secondary: 0.41rem;
+}
+
+.dark-theme {
+   --text: #e8e8e3; /* чуть тепловатее, не чисто белый */
+   --muted-text: #888880; /* тёплый серый вместо нейтрального */
+   --background: #0e0f0d; /* почти чёрный с тёплым оттенком */
+   --foreground: #161815; /* тёмно-зелёный подтон */
+   --muted-foreground: #1e201d; /* чуть светлее foreground */
+   --accent: #3cd48d; /* тот же акцент, что в светлой теме */
+   --on-accent: #0a1a10; /* тёмный текст на зелёном */
+   --muted-accent: #0f2e1e; /* глубокий зелёный, не слишком яркий */
+   --on-muted-accent: #5ee8a5; /* светлый зелёный текст на muted-accent */
+   --warn: #ffb347; /* оставил — хорошо сочетается */
+   --muted-warn: #2e1f08; /* тёплый тёмный янтарный */
+   --success: #3cd48d; /* единый с акцентом */
+   --muted-success: #0f2e1e; /* единый с muted-accent */
+   --destructive: #ff7070; /* чуть мягче, без синеватости */
+   --muted-destructive: #2e1010; /* тёмно-красный подтон */
+
+   --border-color: #252722; /* тёплый тёмный бордер */
+}
