@@ -1,10 +1,7 @@
 import { useForm } from '@/composables/useForm'
 import { warehouseCategoryFormSchema } from '@/forms/warehouseCategory/schema'
-import {
-   createWarehouseCategory,
-   getWarehouseCategory,
-} from '@/services/nomenclature'
-import type { WarehouseCategory } from '@/types/nomenclature'
+import { getWarehouseCategory } from '@/services/nomenclature'
+import type { WarehouseCategory } from '@/types/warehouseCategory'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -34,7 +31,7 @@ export const useAddCategoryStore = defineStore('add-category', () => {
       onSubmit: async (values) => {
          isLoading.value = true
 
-         await createWarehouseCategory(values)
+         // await createWarehouseCategory(values)
 
          isLoading.value = false
       },
