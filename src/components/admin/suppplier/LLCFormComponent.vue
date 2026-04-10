@@ -169,11 +169,43 @@ const props = withDefaults(
    { short: false }
 )
 
+// Checko returns dates as DD.MM.YYYY — convert to YYYY-MM-DD for <input type="date">
+function parseCheckoDate(raw: string | null): string | null {
+   if (!raw) return null
+   const [day, month, year] = raw.split('.')
+   if (!day || !month || !year) return null
+   return `${year}-${month}-${day}`
+}
+
 async function fillInn() {
-   if (store.llcDetails.inn && !store.llcErrors['inn']) {
-      const res = await getCompanyByINN(store.llcDetails.inn)
-      console.log(res)
+   if (!store.llcDetails.inn || store.llcErrors['inn']) return
+
+   const res = await getCompanyByINN(store.llcDetails.inn)
+   if (res.meta.status !== 'ok') return
+
+   const d = res.data
+
+   const fields: Partial<Record<string, string | null>> = {
+      kpp: d.КПП ?? null,
+      ogrn: d.ОГРН ?? null,
+      okpo: d.ОКПО ?? null,
+      okogu: d.ОКОГУ?.Код ?? null,
+      okato: d.ОКАТО?.Код ?? null,
+      oktmo: d.ОКТМО?.Код ?? null,
+      okfs: d.ОКФС?.Код ?? null,
+      okopf: d.ОКОПФ?.Код ?? null,
+      okved: d.ОКВЭД?.Код ?? null,
+      legal_address: d.ЮрАдрес?.АдресРФ ?? null,
+      date_register: parseCheckoDate(d.ДатаРег),
+      tax_system: d.Налоги?.ОсобРежим?.join(', ') ?? null,
    }
+
+   for (const [key, value] of Object.entries(fields)) {
+      if (value !== null) store.setDetail(key, value)
+   }
+
+   if (d.НаимСокр) store.set('short_name', d.НаимСокр)
+   if (d.НаимПолн) store.set('full_name', d.НаимПолн)
 }
 
 function createPerson() {

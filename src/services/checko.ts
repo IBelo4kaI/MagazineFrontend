@@ -1,3 +1,4 @@
+import type { CheckoCompanyResponse } from '@/types/checko'
 import { checkoApi } from './api'
 
 const API_KEY = 'oOQUjHwFjwjWVdeQ'
@@ -765,8 +766,7 @@ meta: {
   message: <STRING>
 Сообщение, поясняющее результат запроса, отсутствует в случае успешной обработки запроса и получении ответа, содержащего требуемые данные
 } */ 
-export async function getCompanyByINN(inn: string): Promise<any> {
+export async function getCompanyByINN(inn: string): Promise<CheckoCompanyResponse> {
    const res = await checkoApi.get(`/company?key=${API_KEY}&inn=${inn}`)
-   console.log('get receipts', res.data)
    return res.data
 }
