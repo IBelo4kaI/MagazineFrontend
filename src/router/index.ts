@@ -99,7 +99,7 @@ export const adminRoutes: RouteRecordRaw[] = [
       },
    },
    {
-      path: '/admin/new-receipts',
+      path: '/admin/new-receipts/:id?',
       name: 'admin-new-receipts',
       component: () => import('@/pages/Admin/Receipt/NewReceipt.vue'),
       meta: {

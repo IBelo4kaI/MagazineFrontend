@@ -3,13 +3,17 @@
    <section class="section">
       <div class="fields">
          <div class="grid" style="--cols: 3">
-            <InputUi
-               label="ИНН"
-               :model-value="store.llcDetails.inn"
-               :error="store.llcErrors.inn"
-               @update:model-value="(v) => store.setDetail('inn', v)"
-               @blur="store.touchDetail('inn')"
-            />
+            <div class="field">
+               <InputUi
+                  label="ИНН"
+                  :model-value="store.llcDetails.inn"
+                  :error="store.llcErrors.inn"
+                  @update:model-value="(v) => store.setDetail('inn', v)"
+                  @blur="store.touchDetail('inn')"
+               />
+               <ButtonUI @click="fillInn">Заполнить</ButtonUI>
+            </div>
+
             <InputUi
                label="КПП"
                :model-value="store.llcDetails.kpp"
@@ -147,7 +151,9 @@
 
 <script lang="ts" setup>
 import Autocomplete from '@/components/Autocomplete.vue'
+import ButtonUI from '@/components/ButtonUI.vue'
 import InputUi from '@/components/InputUi.vue'
+import { getCompanyByINN } from '@/services/checko'
 import { useCreateCounterpartyStore } from '@/stores/admin/addCounterparty'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -162,6 +168,13 @@ const props = withDefaults(
    }>(),
    { short: false }
 )
+
+async function fillInn() {
+   if (store.llcDetails.inn && !store.llcErrors['inn']) {
+      const res = await getCompanyByINN(store.llcDetails.inn)
+      console.log(res)
+   }
+}
 
 function createPerson() {
    router.push({

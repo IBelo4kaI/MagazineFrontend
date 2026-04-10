@@ -16,8 +16,8 @@ export interface Receipt {
    id: string
    num: number
    type: number
-   from: string | null
-   from_name: string | null
+   from: string
+   from_name: string
    to: string | null
    to_name: string | null
    area_name: string | null
@@ -26,7 +26,7 @@ export interface Receipt {
    object_name: string | null
    file_id: string | null
    created_at: string
-   date_arrival: string | null
+   date_arrival: string
    date_completed: string | null
    warehouse_id: string
    warehouse_name: string
@@ -35,3 +35,21 @@ export interface Receipt {
    status_name: string
    items: ReceiptItem[]
 }
+
+export interface ReceiptCreate {
+   num?: number | null
+   from?: string | null
+   to?: string | null
+   type?: number | null
+   area_name?: string | null
+   document?: string | null
+   object_id?: string | null
+   file_id?: string | null
+   date_arrival?: string | null
+   date_completed?: string | null
+   warehouse_id?: string | null
+   delivery_id?: number | null
+   status_id?: string | null
+}
+
+export type ReceiptUpdate = ReceiptCreate

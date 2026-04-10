@@ -127,6 +127,12 @@ hr {
    padding-left: 2.85rem;
 }
 
+.field {
+   display: flex;
+   gap: var(--gap-secondary);
+   align-items: flex-end;
+}
+
 /* Grid layout */
 .grid {
    display: grid;

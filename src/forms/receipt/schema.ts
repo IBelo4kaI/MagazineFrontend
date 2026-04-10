@@ -1,35 +1,10 @@
-import { validators } from '@/composables/useForm'
 import type { FormSchema } from '@/composables/useForm'
+import { validators } from '@/composables/useForm'
+import type { Receipt } from '@/types/receipt'
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-export interface ReceiptItem {
-   nomenclature_id: string
-   quantity?: number | null
-   price?: number | null
-   object_id?: string | null
-}
-
-export interface ReceiptForm {
-   // Receipt
-   num: number | null
-   from: string
-   object_id: string | null
-   file_id: string | null
-   date_arrival: string | null // ISO date (YYYY-MM-DD)
-   date_completed: string | null // ISO datetime
-   warehouse_id: string | null
-   delivery_id: number | null
-   status_id: string | null
-
-   // product
-   items: ReceiptItem[]
-}
-
-// ─── Schema ───────────────────────────────────────────────────────────────────
-
-export const receiptFormSchema: FormSchema<ReceiptForm> = {
+export const receiptFormSchema: FormSchema<Receipt> = {
    num: {
-      initial: null,
+      initial: 1,
    },
    from: {
       initial: '',
@@ -42,19 +17,69 @@ export const receiptFormSchema: FormSchema<ReceiptForm> = {
       initial: null,
    },
    date_arrival: {
-      initial: null,
+      initial: new Date().toDateString(),
    },
    date_completed: {
       initial: null,
    },
    warehouse_id: {
-      initial: null,
+      initial: '',
    },
    delivery_id: {
       initial: null,
    },
    status_id: {
-      initial: null,
+      initial: '',
    },
-   items: { initial: [] },
+
+   // --------------------------------------------
+   area_name: {
+      initial: '',
+      hidden: true,
+   },
+   created_at: {
+      initial: '',
+      hidden: true,
+   },
+   document: {
+      initial: '',
+      hidden: true,
+   },
+   from_name: {
+      initial: '',
+      hidden: true,
+   },
+   id: {
+      initial: '',
+      hidden: true,
+   },
+   items: {
+      initial: [],
+      hidden: true,
+   },
+   object_name: {
+      initial: '',
+      hidden: true,
+   },
+   status_name: {
+      initial: '',
+      hidden: true,
+   },
+   to: {
+      initial: '',
+      hidden: true,
+   },
+
+   to_name: {
+      initial: '',
+      hidden: true,
+   },
+   type: {
+      initial: 1,
+      hidden: true,
+   },
+   warehouse_name: {
+      initial: '',
+      hidden: true,
+   },
 }

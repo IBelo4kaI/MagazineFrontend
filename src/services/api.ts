@@ -11,6 +11,32 @@ export const refApi = axios.create({
 })
 
 export const supplyApi = axios.create({
-   baseURL: 'http://192.168.88.2:8384/api/supply/',
+   baseURL: '/apisup/supply',
    withCredentials: true,
 })
+
+export const checkoApi = axios.create({
+   baseURL: 'https://api.checko.ru/v2/'
+})
+
+function createErrorInterceptor() {
+   return (error: any) => {
+      if (error.response?.status === 401) {
+         const currentUrl = encodeURIComponent(window.location.href)
+         window.location.href = `https://sso.st29.ru/?url=${currentUrl}`
+         return
+      } else if (error.response?.status === 403) {
+         return error
+      }
+      return Promise.reject(error)
+   }
+}
+
+refApi.interceptors.response.use(
+   (response) => response,
+   createErrorInterceptor()
+)
+supplyApi.interceptors.response.use(
+   (response) => response,
+   createErrorInterceptor()
+)

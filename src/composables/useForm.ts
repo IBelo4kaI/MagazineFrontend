@@ -7,6 +7,7 @@ type ValidatorFn<T, V> = (value: V, state: T) => string | null
 export interface FieldSchema<T, V = unknown> {
    initial: V
    validators?: ValidatorFn<T, V>[]
+   hidden?: boolean
 }
 
 export type FormSchema<T> = {
@@ -66,10 +67,12 @@ export interface UseFormOptions<T> {
    onSubmit: (values: T) => Promise<void>
    /** Вызывается после set() — не вызывается при setMany() */
    onAfterSet?: (key: keyof T, value: unknown) => void
+   /** Вызывается при изменении не скрытого поля для автосохранения */
+   onFieldChange?: (key: keyof T, value: unknown, values: T) => Promise<void>
 }
 
 export function useForm<T extends object>(options: UseFormOptions<T>) {
-   const { schema, onSubmit, onAfterSet } = options
+   const { schema, onSubmit, onAfterSet, onFieldChange } = options
 
    const initialValues = (): T =>
       Object.fromEntries(
@@ -87,7 +90,7 @@ export function useForm<T extends object>(options: UseFormOptions<T>) {
 
    function validateField(key: keyof T): string | null {
       const field = schema[key]
-      if (!field.validators) return null
+      if (!field.validators || field.hidden) return null
       for (const fn of field.validators) {
          const error = (fn as ValidatorFn<T, unknown>)(
             values.value[key],
@@ -114,14 +117,20 @@ export function useForm<T extends object>(options: UseFormOptions<T>) {
 
    const isValid = computed(() => !Object.values(validateAll()).some(Boolean))
 
-   /** Обновить одно поле. Вызывает onAfterSet. */
-   function set<K extends keyof T>(key: K, value: T[K]) {
+   /** Обновить одно поле. Вызывает onAfterSet и onFieldChange для не скрытых полей. */
+   async function set<K extends keyof T>(key: K, value: T[K]) {
       values.value[key] = value
       isDirty.value = true
       onAfterSet?.(key, value)
+
+      // Автосохранение для не скрытых полей
+      const field = schema[key]
+      if (onFieldChange && !field.hidden) {
+         await onFieldChange(key, value, values.value)
+      }
    }
 
-   /** Обновить несколько полей без вызова onAfterSet. */
+   /** Обновить несколько полей без вызова onAfterSet и onFieldChange. */
    function setMany(fields: Partial<T>) {
       for (const key in fields) {
          values.value[key as keyof T] = fields[key as keyof T] as T[keyof T]
@@ -134,7 +143,9 @@ export function useForm<T extends object>(options: UseFormOptions<T>) {
    }
 
    function touchAll() {
-      for (const key in schema) touched.value[key] = true
+      for (const key in schema) {
+         if (!schema[key].hidden) touched.value[key] = true
+      }
    }
 
    function reset() {

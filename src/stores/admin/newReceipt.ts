@@ -4,14 +4,19 @@ import { getCounterparties } from '@/services/counterparty'
 import { getNomenclatures } from '@/services/nomenclature'
 import type { Counterparty } from '@/types/counterparty'
 import type { Nomenclature } from '@/types/nomenclature'
+import type { Receipt, ReceiptUpdate } from '@/types/receipt'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export const useNewReceipt = defineStore('new-receipt', () => {
+export const useNewReceiptStore = defineStore('new-receipt', () => {
+   const receipt = ref<Receipt>()
+
    const counterpartyOptions = ref<Counterparty[]>([])
    const counterpartyLoading = ref(false)
+   
    const nomenclatureOptions = ref<Nomenclature[]>([])
    const nomenclatureLoading = ref(false)
+
    const isLoading = ref(false)
 
    const load = async () => {
@@ -40,7 +45,13 @@ export const useNewReceipt = defineStore('new-receipt', () => {
       },
    })
 
+   function setReceipt(r: Receipt) {
+      form.setMany({ ...r })
+   }
+
    return {
+      receipt,
+      setReceipt,
       counterpartyOptions,
       counterpartyLoading,
       nomenclatureOptions,

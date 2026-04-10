@@ -23,7 +23,7 @@ import AppTable, { type TableHeader } from '@/components/AppTable.vue'
 import ButtonUI from '@/components/ButtonUI.vue'
 import ContentLayout from '@/layouts/ContentLayout.vue'
 import { getWarehouseCategory } from '@/services/nomenclature'
-import type { WarehouseCategory } from '@/types/nomenclature'
+import type { WarehouseCategory } from '@/types/warehouseCategory'
 import { computed, onMounted, ref } from 'vue'
 
 const categories = ref<WarehouseCategory[]>([])
@@ -40,7 +40,7 @@ const items = computed<Record<string, unknown>[]>(() => {
       return categories.value.flatMap((p) => {
          return {
             ...p,
-            parentName: categories.value.find((c) => c.id == p.parentId)?.name,
+            parentName: categories.value.find((c) => c.id == p.parent_id)?.name,
          }
       }) as Record<string, unknown>[]
    }

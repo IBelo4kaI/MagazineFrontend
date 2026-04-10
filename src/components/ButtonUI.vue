@@ -21,6 +21,8 @@ type ButtonType =
    | 'warn'
    | 'disable'
    | 'inline'
+   | 'icon--danger'
+   | 'icon'
 
 interface Props {
    icon?: string
@@ -105,5 +107,25 @@ button {
    /* opacity: 0.6; */
    color: var(--muted-text);
    cursor: not-allowed;
+}
+
+.icon,
+.icon--danger {
+   width: 2rem;
+   height: 2rem;
+   border: none;
+   border-radius: calc(var(--border-radius) / 2);
+   background: var(--muted-foreground);
+   color: var(--muted-text);
+}
+
+.icon:hover {
+   background: var(--muted-accent);
+   color: var(--accent);
+}
+
+.icon--danger:hover {
+   background: var(--muted-destructive);
+   color: var(--destructive);
 }
 </style>

@@ -4,36 +4,17 @@
          <ButtonUI
             type="inline"
             icon="fa-regular fa-chevron-left"
-            @click="router.back()"
+            @click="goBack()"
          >
             Назад
          </ButtonUI>
          <div class="page-header__title">
             <span class="label-muted">Создание поступления</span>
-            <h1>Новое поступление</h1>
+            <h1>Приходная накладная №{{ newReceiptStore.values.num }}</h1>
          </div>
       </div>
 
       <AddReceiptComponent />
-      <!-- <AppStepper
-         :steps="[
-            { label: 'Основное', icon: 'fa-regular fa-circle-1' },
-            { label: 'Товары', icon: 'fa-regular fa-circle-2' },
-            { label: 'Проверка', icon: 'fa-regular fa-circle-3' },
-         ]"
-         clickable
-         :block-complete-action="!store.isValid"
-         @completed="store.submit"
-      >
-         <template #step-0><StepSelectSupplier /></template>
-         <template #step-1><StepAddProducts /></template>
-         <template #step-2><StepInfoLast /></template>
-      </AppStepper> -->
-      <!-- <div class="form new-receipt">
-         <StepSelectSupplier />
-         <StepAddProducts />
-         <StepInfoLast />
-      </div> -->
    </ContentLayout>
 </template>
 
@@ -41,23 +22,35 @@
 import AddReceiptComponent from '@/components/admin/AddReceiptComponent.vue'
 import ButtonUI from '@/components/ButtonUI.vue'
 import ContentLayout from '@/layouts/ContentLayout.vue'
+import { getReceiptById } from '@/services/receipt'
+import { onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useNewReceiptStore } from '../../../stores/admin/newReceipt'
 
 const router = useRouter()
 const route = useRoute()
 
+const newReceiptStore = useNewReceiptStore()
+
 async function goBack() {
-   const redirect = route.query.redirect as string | undefined
-   if (redirect) {
-      router.push(redirect)
-   } else {
-      router.back()
-   }
+   router.push({ name: 'admin-receipts' })
 }
 
 async function onSuccess() {
    goBack()
 }
+
+onMounted(async () => {
+   const id = route.params['id']
+   if (id) {
+      const receipt = await getReceiptById(id as string)
+      newReceiptStore.setReceipt(receipt)
+   } else {
+   }
+})
+onUnmounted(() => {
+   newReceiptStore.reset()
+})
 </script>
 
 <style scoped>

@@ -106,6 +106,7 @@ export const llcDetailSchema: FormSchema<LLCDetailForm> = {
       validators: [
          validators.required('Укажите ИНН'),
          validators.minLength(10, 'ИНН ООО должен содержать 10 цифр'),
+         validators.maxLength(10, 'ИНН ООО должен содержать 10 цифр'),
       ],
    },
    kpp: {

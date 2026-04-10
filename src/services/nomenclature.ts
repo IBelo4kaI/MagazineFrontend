@@ -2,7 +2,7 @@ import type {
    CreateNomenclatureRequest,
    Nomenclature,
 } from '@/types/nomenclature'
-import { magApi } from './api'
+import { magApi, supplyApi } from './api'
 import type { WarehouseCategory } from '@/types/warehouseCategory'
 import {
    mockNomenclatures,
@@ -29,12 +29,8 @@ export async function getNomenclatures(
 ): Promise<Nomenclature[]> {
    console.log('get Nomenclatures')
 
-   // const res = await magApi.get<Nomenclature[]>(`/nomenclatures`)
-   // return res.data
-
-   return new Promise((resolve) => {
-      setTimeout(() => resolve(mockNomenclatures), 600)
-   })
+   const res = await supplyApi.get<Nomenclature[]>(`/nomenclature`)
+   return res.data
 }
 
 export async function getWarehouseCategory(
@@ -42,12 +38,8 @@ export async function getWarehouseCategory(
 ): Promise<WarehouseCategory[]> {
    console.log('get WarehouseCategory', mockWarehouseCategories)
 
-   // const res = await magApi.get<WarehouseCategory[]>(`/categories`)
-   // return res.data
-
-   return new Promise((resolve) => {
-      setTimeout(() => resolve(mockWarehouseCategories), 600)
-   })
+   const res = await supplyApi.get<WarehouseCategory[]>(`/warehouse-categories`)
+   return res.data
 }
 
 export async function getUnits(search?: string): Promise<Unit[]> {

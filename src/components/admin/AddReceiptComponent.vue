@@ -1,8 +1,8 @@
 <template>
    <div class="form">
       <!-- <div class="loading" v-if="store.isLoading">
-         <i class="fa-regular fa-spin fa-boxes"></i>
-      </div> -->
+            <i class="fa-regular fa-spin fa-boxes"></i>
+         </div> -->
       <section class="section">
          <div class="head">
             <span class="icon">
@@ -15,10 +15,15 @@
          </div>
       </section>
       <section class="section">
-         <div class="grid" style="--cols: 3">
-            <InputUi label="Дата прихода" type="date" />
+         <div class="grid" style="--cols: 2">
+            <InputUi
+               label="Дата прихода"
+               type="date"
+               :error="err('date_arrival')"
+               v-model="store.values.date_arrival"
+               @update:model-value="(v) => field('date_arrival', v)"
+            />
             <InputUi label="От кого" />
-            <InputUi label="Кому" />
             <InputUi label="Объект" />
          </div>
       </section>
@@ -113,15 +118,15 @@
       <div class="section">
          <div class="grid" style="--cols: 3">
             <!-- <ButtonUI type="muted" @click="onCancel">Отмена</ButtonUI>
-            <ButtonUI type="muted" @click="store.reset">Сбросить</ButtonUI>
-            <ButtonUI
-               type="accent"
-               icon="fa-regular fa-plus"
-               @click="onSubmit"
-               :disabled="store.isSubmitting"
-            >
-               Добавить товар
-            </ButtonUI> -->
+               <ButtonUI type="muted" @click="store.reset">Сбросить</ButtonUI>
+               <ButtonUI
+                  type="accent"
+                  icon="fa-regular fa-plus"
+                  @click="onSubmit"
+                  :disabled="store.isSubmitting"
+               >
+                  Добавить товар
+               </ButtonUI> -->
          </div>
       </div>
    </div>
@@ -129,18 +134,17 @@
 
 <script lang="ts" setup>
 import { useModal } from '@/composables/useModal'
+import { useNewReceiptStore } from '@/stores/admin/newReceipt'
 import { useNomenclaturesStore } from '@/stores/admin/nomenclatures'
 import type { Nomenclature } from '@/types/nomenclature'
 import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import AppTable, { type TableHeader } from '../AppTable.vue'
 import Autocomplete from '../Autocomplete.vue'
+import ButtonUI from '../ButtonUI.vue'
 import InputUi from '../InputUi.vue'
 import AddNomenclatureModal from '../modals/AddNomenclatureModal.vue'
-import ButtonUI from '../ButtonUI.vue'
-
-const router = useRouter()
-const route = useRoute()
+import type { Receipt, ReceiptUpdate } from '@/types/receipt'
+import { updateWarehouseReceipt } from '@/services/receipt'
 
 const nomenclaturesStore = useNomenclaturesStore()
 const selectedNomenclature = ref<Nomenclature | null>()
@@ -151,13 +155,10 @@ const selectNomenclature = (v: Nomenclature | null) => {
 
 const props = withDefaults(
    defineProps<{
-      mode?: 'create' | 'add'
       onSubmit?: (val: string) => Promise<void>
       onCancel?: () => Promise<void>
    }>(),
-   {
-      mode: 'create',
-   }
+   {}
 )
 
 const headers: TableHeader[] = [
@@ -177,14 +178,18 @@ const handleCreate = async () => {
    }
 }
 
-// const store = useAddProductStore()
+const store = useNewReceiptStore()
 
-// const err = (key: keyof NomenclatureForm): string | undefined =>
-//    store.errors[key] ?? undefined
+async function field<K extends keyof Receipt>(key: K, v: unknown) {
+   store.set(key, v as Receipt[K])
+   const updateReq: ReceiptUpdate = { [key]: v as Receipt[K] }
+   console.log(updateReq)
+   const res = await updateWarehouseReceipt(store.values.id, updateReq)
+   store.setReceipt(res)
+}
 
-// function field<K extends keyof NomenclatureForm>(key: K, v: unknown) {
-//    store.set(key, v as NomenclatureForm[K])
-// }
+const err = (key: keyof Receipt): string | undefined =>
+   store.errors[key] ?? undefined
 
 // const onSubmit = async () => {
 //    store.touchAll()
