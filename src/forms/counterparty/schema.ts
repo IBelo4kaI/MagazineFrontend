@@ -147,8 +147,8 @@ export const llcDetailSchema: FormSchema<LLCDetailForm> = {
       initial: '',
       validators: [validators.required('Выберите директора')],
    },
-   director_basis: { initial: null },
-   date_register: { initial: null },
+   director_basis: { initial: null, hidden: true },
+   date_register: { initial: null, hidden: true },
 }
 
 // ─── IP schema ────────────────────────────────────────────────────────────────

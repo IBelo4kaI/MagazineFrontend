@@ -1,21 +1,8 @@
 import { useForm } from '@/composables/useForm'
 import { personFormSchema } from '@/forms/person/schema'
-import type { PersonForm } from '@/forms/person/schema'
 import { createPerson } from '@/services/person'
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-
-// ─── Helper ───────────────────────────────────────────────────────────────────
-
-type NullToUndef<T> = { [K in keyof T]: string | undefined }
-
-function nullToUndef<T extends object>(
-   errors: Record<keyof T, string | null>
-): NullToUndef<T> {
-   return Object.fromEntries(
-      Object.entries(errors).map(([k, v]) => [k, v ?? undefined])
-   ) as NullToUndef<T>
-}
+import { ref } from 'vue'
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 

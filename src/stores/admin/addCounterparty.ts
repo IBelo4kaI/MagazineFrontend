@@ -103,33 +103,6 @@ export const useCreateCounterpartyStore = defineStore(
          onSubmit: async () => {},
       })
 
-      async function selectCounterparty(v: Counterparty) {
-         reset()
-
-         setType(v.type)
-
-         form.setMany({
-            contract_prefix: v.contract_prefix,
-            full_name: v.full_name,
-            is_internal: v.is_internal,
-            short_name: v.short_name,
-         })
-
-         const details = await getCounterpartyDetails(v)
-
-         switch (details?.type) {
-            case 'IP':
-               ipForm.setMany({ ...details.data })
-               break
-            case 'LLC':
-               llcForm.setMany({ ...details.data })
-               break
-            case 'PHYSIC':
-               physicForm.setMany({ ...details.data })
-               break
-         }
-      }
-
       // ─── Typed per-form accessors ──────────────────────────────────────────────
 
       const llcDetails = computed(() => llcForm.values.value)
@@ -258,7 +231,6 @@ export const useCreateCounterpartyStore = defineStore(
          isSubmitting,
          counterpartyOptions,
          counterpartyLoading,
-         selectCounterparty,
          searchCounterparty,
          personsOptions,
          personsLoading,

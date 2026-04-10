@@ -1,4 +1,5 @@
 import type { Person } from '@/types/counterparty'
+import { refApi, supplyApi } from './api'
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -92,13 +93,12 @@ const mockPersons: Person[] = [
 // ─── Request types ───────────────────────────────────────────────────────────
 
 export interface PersonCreate {
-   user_id: string
    name: string
    last_naem: string
-   middle_name: string
-   phone_personal: string
-   email_personal: string
-   birth_date: string
+   middle_name: string | null
+   phone_personal: string | null
+   email_personal: string | null
+   birth_date: string | null
 }
 
 // ─── GET ──────────────────────────────────────────────────────────────────────
@@ -120,31 +120,14 @@ export async function getPersonById(
    personId: string
 ): Promise<Person | undefined> {
    return new Promise((resolve) => {
-      setTimeout(
-         () => resolve(mockPersons.find((p) => p.id === personId)),
-         300
-      )
+      setTimeout(() => resolve(mockPersons.find((p) => p.id === personId)), 300)
    })
 }
 
 // ─── CREATE ──────────────────────────────────────────────────────────────────
 
 export async function createPerson(data: PersonCreate): Promise<Person> {
-   return new Promise((resolve) => {
-      const created: Person = {
-         id: crypto.randomUUID(),
-         user_id: data.user_id || null,
-         name: data.name,
-         last_name: data.last_naem,
-         middle_name: data.middle_name,
-         full_name: `${data.last_naem} ${data.name} ${data.middle_name}`.trim(),
-         phone: data.phone_personal,
-         email: data.email_personal,
-         birth_date: data.birth_date,
-         companies: [],
-      }
-
-      mockPersons.push(created)
-      setTimeout(() => resolve(created), 400)
-   })
+   const res = await refApi.post<Person>('/persons', data)
+   console.log('create person', res.data)
+   return res.data
 }

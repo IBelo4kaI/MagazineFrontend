@@ -1,5 +1,9 @@
 <template>
-   <ModalLayoutBody title="Создание номенклатуры" @confirm="submit">
+   <ModalLayoutBody
+      title="Создание номенклатуры"
+      @confirm="submit"
+      @close="emit('close')"
+   >
       <div class="form">
          <InputUi
             label="Наименование"

@@ -31,18 +31,12 @@
             </div>
 
             <div class="grid" style="--cols: 2">
-               <Autocomplete
-                  label="Краткое наименование"
-                  :options="store.counterpartyOptions"
+               <InputUi
+                  label="Короткое наименование"
                   :model-value="store.values.short_name"
-                  label-key="short_name"
-                  value-key="short_name"
                   :error="err('short_name')"
-                  :loading="store.counterpartyLoading"
                   @update:model-value="(v) => field('short_name', v)"
-                  @select="store.selectCounterparty"
                   @blur="store.touch('short_name')"
-                  @focus="async () => await store.searchCounterparty()"
                />
                <InputUi
                   label="Полное наименование"

@@ -134,7 +134,37 @@
                   "
                   @blur="store.touchDetail('director_person_id')"
                   @focus="async () => await store.searchPersons()"
-                  @create="createPerson"
+                  @button-handler="createPerson"
+               />
+               <Autocomplete
+                  label="Директор"
+                  :options="store.personsOptions"
+                  :model-value="store.llcDetails.director_person_id"
+                  label-key="full_name"
+                  value-key="id"
+                  :error="store.llcErrors.director_person_id"
+                  :loading="store.personsLoading"
+                  @update:model-value="
+                     (v) => store.setDetail('director_person_id', v)
+                  "
+                  @blur="store.touchDetail('director_person_id')"
+                  @focus="async () => await store.searchPersons()"
+                  @button-handler="createPerson"
+               />
+               <Autocomplete
+                  label="Директор"
+                  :options="store.personsOptions"
+                  :model-value="store.llcDetails.director_person_id"
+                  label-key="full_name"
+                  value-key="id"
+                  :error="store.llcErrors.director_person_id"
+                  :loading="store.personsLoading"
+                  @update:model-value="
+                     (v) => store.setDetail('director_person_id', v)
+                  "
+                  @blur="store.touchDetail('director_person_id')"
+                  @focus="async () => await store.searchPersons()"
+                  @button-handler="createPerson"
                />
                <InputUi
                   label="Основание полномочий"
@@ -153,6 +183,8 @@
 import Autocomplete from '@/components/Autocomplete.vue'
 import ButtonUI from '@/components/ButtonUI.vue'
 import InputUi from '@/components/InputUi.vue'
+import AddPersonModal from '@/components/modals/AddPersonModal.vue'
+import { useModal } from '@/composables/useModal'
 import { getCompanyByINN } from '@/services/checko'
 import { useCreateCounterpartyStore } from '@/stores/admin/addCounterparty'
 import { useRoute, useRouter } from 'vue-router'
@@ -194,7 +226,7 @@ async function fillInn() {
       oktmo: d.ОКТМО?.Код ?? null,
       okfs: d.ОКФС?.Код ?? null,
       okopf: d.ОКОПФ?.Код ?? null,
-      okved: d.ОКВЭД?.Код ?? null,
+      okved: d.ОКВЭД ? `${d.ОКВЭД.Код + ' - ' + d.ОКВЭД.Наим}` : null,
       legal_address: d.ЮрАдрес?.АдресРФ ?? null,
       date_register: parseCheckoDate(d.ДатаРег),
       tax_system: d.Налоги?.ОсобРежим?.join(', ') ?? null,
@@ -208,11 +240,16 @@ async function fillInn() {
    if (d.НаимПолн) store.set('full_name', d.НаимПолн)
 }
 
-function createPerson() {
-   router.push({
-      name: 'admin-add-person',
-      query: { redirect: route.fullPath },
-   })
+const { open } = useModal()
+
+async function createPerson() {
+   console.log('rds')
+
+   const result = await open(AddPersonModal)
+
+   if (result) {
+      console.log(result)
+   }
 }
 </script>
 
