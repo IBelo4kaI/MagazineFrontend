@@ -1,13 +1,13 @@
 import { validators } from '@/composables/useForm'
 import type { FormSchema } from '@/composables/useForm'
 
-export interface PhysicDetailForm {
+export interface EmployeeForm {
    person_id: string
    counterparty_id: string
    position: string
 }
 
-export const physicDetailSchema: FormSchema<PhysicDetailForm> = {
+export const physicDetailSchema: FormSchema<EmployeeForm> = {
    person_id: {
       initial: '',
       validators: [validators.required('Выберите физическое лицо')],

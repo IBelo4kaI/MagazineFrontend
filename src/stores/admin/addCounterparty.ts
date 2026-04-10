@@ -11,6 +11,10 @@ import {
    llcDetailSchema,
    physicDetailSchema,
 } from '@/forms/counterparty/schema'
+import type { EmployeeForm } from '@/forms/employee/schema'
+import { physicDetailSchema as employeeFormSchema } from '@/forms/employee/schema'
+import type { PersonForm } from '@/forms/person/schema'
+import { personFormSchema } from '@/forms/person/schema'
 import {
    createCounterparty,
    createIPDetails,
@@ -103,6 +107,16 @@ export const useCreateCounterpartyStore = defineStore(
          onSubmit: async () => {},
       })
 
+      const personForm = useForm({
+         schema: personFormSchema,
+         onSubmit: async () => {},
+      })
+
+      const employeeForm = useForm({
+         schema: employeeFormSchema,
+         onSubmit: async () => {},
+      })
+
       // ─── Typed per-form accessors ──────────────────────────────────────────────
 
       const llcDetails = computed(() => llcForm.values.value)
@@ -118,6 +132,16 @@ export const useCreateCounterpartyStore = defineStore(
       const physicDetails = computed(() => physicForm.values.value)
       const physicErrors = computed(() =>
          nullToUndef<PhysicDetailForm>(physicForm.errors.value)
+      )
+
+      const personDetails = computed(() => personForm.values.value)
+      const personErrors = computed(() =>
+         nullToUndef<PersonForm>(personForm.errors.value)
+      )
+
+      const employeeDetails = computed(() => employeeForm.values.value)
+      const employeeErrors = computed(() =>
+         nullToUndef<EmployeeForm>(employeeForm.errors.value)
       )
 
       // base form errors тоже конвертируем
@@ -139,6 +163,26 @@ export const useCreateCounterpartyStore = defineStore(
          if (t === 'LLC') llcForm.touch(key as keyof LLCDetailForm)
          else if (t === 'IP') ipForm.touch(key as keyof IPDetailForm)
          else physicForm.touch(key as keyof PhysicDetailForm)
+      }
+
+      // ─── setPerson / touchPerson ───────────────────────────────────────────────
+
+      function setPerson(key: string, value: unknown): void {
+         personForm.set(key as keyof PersonForm, value as never)
+      }
+
+      function touchPerson(key: string): void {
+         personForm.touch(key as keyof PersonForm)
+      }
+
+      // ─── setEmployee / touchEmployee ───────────────────────────────────────────
+
+      function setEmployee(key: string, value: unknown): void {
+         employeeForm.set(key as keyof EmployeeForm, value as never)
+      }
+
+      function touchEmployee(key: string): void {
+         employeeForm.touch(key as keyof EmployeeForm)
       }
 
       // ─── Type switch ───────────────────────────────────────────────────────────
@@ -224,6 +268,8 @@ export const useCreateCounterpartyStore = defineStore(
          llcForm.reset()
          ipForm.reset()
          physicForm.reset()
+         personForm.reset()
+         employeeForm.reset()
       }
 
       return {
@@ -248,6 +294,16 @@ export const useCreateCounterpartyStore = defineStore(
          ipErrors,
          physicDetails,
          physicErrors,
+         // person form
+         personDetails,
+         personErrors,
+         setPerson,
+         touchPerson,
+         // employee form
+         employeeDetails,
+         employeeErrors,
+         setEmployee,
+         touchEmployee,
          // generic routing
          setDetail,
          touchDetail,

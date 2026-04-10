@@ -136,42 +136,89 @@
                   @focus="async () => await store.searchPersons()"
                   @button-handler="createPerson"
                />
-               <Autocomplete
-                  label="Директор"
-                  :options="store.personsOptions"
-                  :model-value="store.llcDetails.director_person_id"
-                  label-key="full_name"
-                  value-key="id"
-                  :error="store.llcErrors.director_person_id"
-                  :loading="store.personsLoading"
-                  @update:model-value="
-                     (v) => store.setDetail('director_person_id', v)
-                  "
-                  @blur="store.touchDetail('director_person_id')"
-                  @focus="async () => await store.searchPersons()"
-                  @button-handler="createPerson"
-               />
-               <Autocomplete
-                  label="Директор"
-                  :options="store.personsOptions"
-                  :model-value="store.llcDetails.director_person_id"
-                  label-key="full_name"
-                  value-key="id"
-                  :error="store.llcErrors.director_person_id"
-                  :loading="store.personsLoading"
-                  @update:model-value="
-                     (v) => store.setDetail('director_person_id', v)
-                  "
-                  @blur="store.touchDetail('director_person_id')"
-                  @focus="async () => await store.searchPersons()"
-                  @button-handler="createPerson"
-               />
                <InputUi
                   label="Основание полномочий"
                   :model-value="store.llcDetails.director_basis"
                   @update:model-value="
                      (v) => store.setDetail('director_basis', v)
                   "
+               />
+            </div>
+         </div>
+
+         <div class="subgroup">
+            <p class="label">
+               <i class="fa-regular fa-user" />
+               Физическое лицо
+            </p>
+            <div class="grid" style="--cols: 3">
+               <InputUi
+                  label="Фамилия"
+                  :model-value="store.personDetails.last_naem"
+                  :error="store.personErrors.last_naem"
+                  @update:model-value="(v) => store.setPerson('last_naem', v)"
+                  @blur="store.touchPerson('last_naem')"
+               />
+               <InputUi
+                  label="Имя"
+                  :model-value="store.personDetails.name"
+                  :error="store.personErrors.name"
+                  @update:model-value="(v) => store.setPerson('name', v)"
+                  @blur="store.touchPerson('name')"
+               />
+               <InputUi
+                  label="Отчество"
+                  :model-value="store.personDetails.middle_name"
+                  @update:model-value="(v) => store.setPerson('middle_name', v)"
+               />
+            </div>
+            <div class="grid" style="--cols: 3">
+               <InputUi
+                  label="Телефон"
+                  :model-value="store.personDetails.phone_personal"
+                  @update:model-value="
+                     (v) => store.setPerson('phone_personal', v)
+                  "
+               />
+               <InputUi
+                  label="Email"
+                  :model-value="store.personDetails.email_personal"
+                  @update:model-value="
+                     (v) => store.setPerson('email_personal', v)
+                  "
+               />
+               <InputUi
+                  label="Дата рождения"
+                  type="date"
+                  :model-value="store.personDetails.birth_date"
+                  @update:model-value="(v) => store.setPerson('birth_date', v)"
+               />
+            </div>
+         </div>
+
+         <div class="subgroup">
+            <p class="label">
+               <i class="fa-regular fa-briefcase" />
+               Сотрудник
+            </p>
+            <div class="grid" style="--cols: 2">
+               <Autocomplete
+                  label="Физическое лицо"
+                  :options="store.personsOptions"
+                  :model-value="store.employeeDetails.person_id"
+                  label-key="full_name"
+                  value-key="id"
+                  :error="store.employeeErrors.person_id"
+                  :loading="store.personsLoading"
+                  @update:model-value="(v) => store.setEmployee('person_id', v)"
+                  @blur="store.touchEmployee('person_id')"
+                  @focus="async () => await store.searchPersons()"
+                  @button-handler="createPerson"
+               />
+               <InputUi
+                  label="Должность"
+                  :model-value="store.employeeDetails.position"
+                  @update:model-value="(v) => store.setEmployee('position', v)"
                />
             </div>
          </div>
