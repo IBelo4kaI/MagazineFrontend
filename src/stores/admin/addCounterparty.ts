@@ -20,7 +20,7 @@ import {
    createPhysicDetails,
    getCounterparties,
 } from '@/services/counterparty'
-import { getPersons } from '@/services/person'
+import { createEmployee, getPersons } from '@/services/person'
 import { createSupplier } from '@/services/supplier'
 import type { Counterparty, Person } from '@/types/counterparty'
 import { defineStore } from 'pinia'
@@ -48,7 +48,7 @@ export const useCreateCounterpartyStore = defineStore(
    'create-counterparty',
    () => {
       // ─── Reference data ────────────────────────────────────────────────────────
-
+      const createdCounterparty = ref<Counterparty | null>(null)
       const counterpartyOptions = ref<Counterparty[]>([])
       const counterpartyLoading = ref(false)
 
@@ -79,24 +79,85 @@ export const useCreateCounterpartyStore = defineStore(
 
       const form = useForm({
          schema: counterpartyFormSchema,
-         onSubmit: async () => {},
+         onSubmit: async (values) => {
+            isLoading.value = true
+            try {
+               createdCounterparty.value = await createCounterparty({
+                  ...values,
+               })
+            } catch (e) {
+               throw e
+            } finally {
+               isLoading.value = false
+            }
+         },
       })
 
       const llcForm = useForm({
          schema: llcDetailSchema,
-         onSubmit: async () => {},
+         onSubmit: async (values) => {
+            isLoading.value = true
+            try {
+               if (createdCounterparty.value)
+                  await createLLCDetails({
+                     counterparties_id: createdCounterparty.value.id,
+                     ...values,
+                  })
+            } catch (e) {
+               throw e
+            } finally {
+               isLoading.value = false
+            }
+         },
       })
       const ipForm = useForm({
          schema: ipDetailSchema,
-         onSubmit: async () => {},
+         onSubmit: async (values) => {
+            isLoading.value = true
+            try {
+               if (createdCounterparty.value)
+                  await createIPDetails({
+                     counterparty_id: createdCounterparty.value.id,
+                     ...values,
+                  })
+            } catch (e) {
+               throw e
+            } finally {
+               isLoading.value = false
+            }
+         },
       })
       const physicForm = useForm({
          schema: physicDetailSchema,
-         onSubmit: async () => {},
+         onSubmit: async (values) => {
+            isLoading.value = true
+            try {
+               if (createdCounterparty.value)
+                  await createPhysicDetails({
+                     counterparty_id: createdCounterparty.value.id,
+                     ...values,
+                  })
+            } catch (e) {
+               throw e
+            } finally {
+               isLoading.value = false
+            }
+         },
       })
       const employeeForm = useForm({
          schema: employeeFormSchema,
-         onSubmit: async () => {},
+         onSubmit: async (values) => {
+            isLoading.value = true
+            try {
+               await createEmployee({
+                  ...values,
+               })
+            } catch (e) {
+               throw e
+            } finally {
+               isLoading.value = false
+            }
+         },
       })
 
       // ─── Typed per-form accessors ──────────────────────────────────────────────
@@ -194,33 +255,40 @@ export const useCreateCounterpartyStore = defineStore(
          isSubmitting.value = true
 
          try {
-            const counterparty = counterpartyOptions.value.find(
-               (c) => c.full_name == form.values.value.full_name
-            )
+            // const counterparty = counterpartyOptions.value.find(
+            //    (c) => c.full_name == form.values.value.full_name
+            // )
 
-            if (counterparty) {
-               await createSupplier({ counterpartiesId: counterparty?.id })
-            } else {
-               const { id } = await createCounterparty(form.values.value)
-               const t = form.values.value.type
-
-               if (t === 'LLC') {
-                  await createLLCDetails({
-                     ...llcForm.values.value,
-                     counterparties_id: id,
-                  })
-               } else if (t === 'IP') {
-                  await createIPDetails({
-                     ...ipForm.values.value,
-                     counterparty_id: id,
-                  })
-               } else {
-                  await createPhysicDetails({
-                     ...physicForm.values.value,
-                     counterparty_id: id,
-                  })
-               }
+            await form.submit()
+            if (form.submitError.value) {
+               console.log(form.submitError.value)
+               return
             }
+
+            const t = form.values.value.type
+
+            if (t === 'LLC') {
+               await llcForm.submit()
+               employeeForm.set(
+                  'person_id',
+                  llcDetails.value.director_person_id
+               )
+            } else if (t === 'IP') {
+               await ipForm.submit()
+               employeeForm.set('person_id', ipDetails.value.person_id)
+            } else {
+               await physicForm.submit()
+               employeeForm.set('person_id', physicDetails.value.person_id)
+            }
+
+            if (createdCounterparty.value) {
+               employeeForm.set('counterparty_id', createdCounterparty.value.id)
+               await createSupplier({
+                  counterpartiesId: createdCounterparty.value.id,
+               })
+            }
+
+            await employeeForm.submit()
          } finally {
             isLoading.value = false
             isSubmitting.value = false
@@ -262,6 +330,7 @@ export const useCreateCounterpartyStore = defineStore(
          // employee form
          employeeDetails,
          employeeErrors,
+         employeeForm,
          setEmployee,
          touchEmployee,
          // generic routing

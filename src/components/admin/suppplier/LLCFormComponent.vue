@@ -153,9 +153,11 @@
 import Autocomplete from '@/components/Autocomplete.vue'
 import ButtonUI from '@/components/ButtonUI.vue'
 import InputUi from '@/components/InputUi.vue'
+import AddExistCounterpartyToSupplier from '@/components/modals/AddExistCounterpartyToSupplier.vue'
 import AddPersonModal from '@/components/modals/AddPersonModal.vue'
 import { useModal } from '@/composables/useModal'
 import { getCompanyByINN } from '@/services/checko'
+import { getCounterpartyByINN } from '@/services/counterparty'
 import { useCreateCounterpartyStore } from '@/stores/admin/addCounterparty'
 import { useCreatePersonStore } from '@/stores/admin/addPerson'
 
@@ -168,6 +170,8 @@ const props = withDefaults(
    { short: false }
 )
 
+const { open } = useModal()
+
 // Checko returns dates as DD.MM.YYYY — convert to YYYY-MM-DD for <input type="date">
 function parseCheckoDate(raw: string | null): string | null {
    if (!raw) return null
@@ -178,6 +182,15 @@ function parseCheckoDate(raw: string | null): string | null {
 
 async function fillInn() {
    if (!store.llcDetails.inn || store.llcErrors['inn']) return
+
+   const existCounterparty = await getCounterpartyByINN(store.llcDetails.inn)
+   if (existCounterparty) {
+      const result = await open(AddExistCounterpartyToSupplier, {
+         counterparty: existCounterparty[0],
+      })
+
+      return
+   }
 
    const res = await getCompanyByINN(store.llcDetails.inn)
    if (res.meta.status !== 'ok') return
@@ -227,15 +240,18 @@ async function fillInn() {
          })
          await createPerson()
       }
+
+      store.setEmployee('position', director.НаимДолжн)
    }
 }
-
-const { open } = useModal()
 
 async function createPerson() {
    const result: string | undefined = await open<string>(AddPersonModal)
 
+   console.log(result)
+
    if (result) {
+      await store.searchPersons()
       store.setDetail('director_person_id', result)
    }
 }

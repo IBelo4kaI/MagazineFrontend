@@ -106,12 +106,10 @@ import ButtonUI from '@/components/ButtonUI.vue'
 import InputUi from '@/components/InputUi.vue'
 import type { CounterpartyForm } from '@/forms/counterparty/schema'
 import { useCreateCounterpartyStore } from '@/stores/admin/addCounterparty'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted } from 'vue'
 import IPFormComponent from './IPFormComponent.vue'
 import LLCFormComponent from './LLCFormComponent.vue'
 import PHYSICFormComponent from './PHYSICFormComponent.vue'
-import Autocomplete from '@/components/Autocomplete.vue'
-import type { CounterpartyType } from '@/types/counterparty'
 
 const props = withDefaults(
    defineProps<{
@@ -137,9 +135,9 @@ function field<K extends keyof CounterpartyForm>(key: K, v: unknown) {
 }
 
 const onSubmit = async () => {
+   await store.submit()
    store.touchAll()
    if (!store.isValid) return
-   await store.submit()
    if (props.onSubmit) await props.onSubmit(store.values)
    store.reset()
 }

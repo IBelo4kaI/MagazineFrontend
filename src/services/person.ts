@@ -10,6 +10,13 @@ export interface PersonCreate {
    birth_date: string | null
 }
 
+export interface EmployeeCreate {
+   counterparty_id: string
+   person_id: string
+   position?: string | null
+   role_type: string
+}
+
 // ─── GET ──────────────────────────────────────────────────────────────────────
 
 export async function getPersons(search?: string): Promise<Person[]> {
@@ -34,4 +41,9 @@ export async function createPerson(data: PersonCreate): Promise<Person> {
    const res = await refApi.post<Person>('/persons', data)
    console.log('create person', res.data)
    return res.data
+}
+
+export async function createEmployee(data: EmployeeCreate): Promise<void> {
+   const res = await refApi.post<Person>('/employees', data)
+   console.log('create person', res.data)
 }

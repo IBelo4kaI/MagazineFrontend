@@ -23,7 +23,17 @@
                v-model="store.values.date_arrival"
                @update:model-value="(v) => field('date_arrival', v)"
             />
-            <InputUi label="От кого" />
+            <Autocomplete
+               label="Поставщик"
+               label-key="short_name"
+               value-key="id"
+               button-text="Создать поставщика"
+               button-position="dropdown-top"
+               :options="store.counterpartyOptions"
+               :error="store.errors.from ?? undefined"
+               :loading="store.counterpartyLoading"
+               @focus="async () => await store.searchCounterparty()"
+            />
             <InputUi label="Объект" />
          </div>
       </section>

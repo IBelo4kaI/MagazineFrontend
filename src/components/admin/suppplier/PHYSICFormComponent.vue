@@ -131,14 +131,13 @@
 import Autocomplete from '@/components/Autocomplete.vue'
 import ButtonUI from '@/components/ButtonUI.vue'
 import InputUi from '@/components/InputUi.vue'
+import AddPersonModal from '@/components/modals/AddPersonModal.vue'
+import { useModal } from '@/composables/useModal'
 import { getPersonByINN } from '@/services/checko'
 import { useCreateCounterpartyStore } from '@/stores/admin/addCounterparty'
-import { useRoute, useRouter } from 'vue-router'
+import { useCreatePersonStore } from '@/stores/admin/addPerson'
 
 const store = useCreateCounterpartyStore()
-
-const router = useRouter()
-const route = useRoute()
 
 const props = withDefaults(
    defineProps<{
@@ -157,14 +156,39 @@ async function fillInn() {
    if (d.ФИО) {
       store.set('short_name', d.ФИО)
       store.set('full_name', d.ФИО)
+
+      if (store.personsOptions.length == 0) {
+         await store.searchPersons()
+      }
+      const person = store.personsOptions.find((p) => p.full_name == d.ФИО)
+      if (person) {
+         store.setDetail('director_person_id', person.id)
+      } else {
+         const createPersonStore = useCreatePersonStore()
+         const last_name = d.ФИО.split(' ')[0]
+         const name = d.ФИО.split(' ')[1]
+         const middle_name = d.ФИО.split(' ')[2]
+         createPersonStore.setMany({
+            last_naem: last_name,
+            name: name,
+            middle_name: middle_name,
+         })
+         await createPerson()
+      }
    }
 }
 
-function createPerson() {
-   router.push({
-      name: 'admin-add-person',
-      query: { redirect: route.fullPath },
-   })
+const { open } = useModal()
+
+async function createPerson() {
+   const result: string | undefined = await open<string>(AddPersonModal)
+
+   console.log(result)
+
+   if (result) {
+      await store.searchPersons()
+      store.setDetail('director_person_id', result)
+   }
 }
 </script>
 

@@ -4,7 +4,7 @@
          <ButtonUi
             type="inline"
             icon="fa-regular fa-chevron-left"
-            @click="router.back()"
+            @click="goBack"
          >
             Назад
          </ButtonUi>
@@ -32,7 +32,7 @@ async function goBack() {
    if (redirect) {
       router.push(redirect)
    } else {
-      router.back()
+      router.push({ name: 'admin-counterparties' })
    }
 }
 

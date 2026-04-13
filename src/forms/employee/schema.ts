@@ -5,6 +5,7 @@ export interface EmployeeForm {
    person_id: string
    counterparty_id: string
    position: string
+   role_type: string
 }
 
 export const physicDetailSchema: FormSchema<EmployeeForm> = {
@@ -18,5 +19,8 @@ export const physicDetailSchema: FormSchema<EmployeeForm> = {
    },
    position: {
       initial: '',
+   },
+   role_type: {
+      initial: 'owner',
    },
 }
