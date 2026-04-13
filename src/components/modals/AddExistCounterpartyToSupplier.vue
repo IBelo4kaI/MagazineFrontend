@@ -6,16 +6,30 @@
       @close="emit('close')"
    >
       <div class="card">
+         <p class="description">
+            Контрагент с таким ИНН уже существует в системе. Хотите добавить его в поставщики?
+         </p>
+
          <!-- Header -->
-         <div class="card-header">
+         <div class="card-header" @click="expanded = !expanded">
             <div class="type-badge">{{ props.counterparty.type }}</div>
             <div class="card-names">
                <span class="short-name">{{ props.counterparty.short_name }}</span>
                <span class="full-name">{{ props.counterparty.full_name }}</span>
             </div>
+            <i
+               class="fa-regular fa-chevron-down chevron"
+               :class="{ 'chevron--open': expanded }"
+            />
          </div>
 
-         <template v-if="details">
+         <template v-if="expanded">
+            <div v-if="!details" class="loading-state">
+               <i class="fa-regular fa-circle-notch fa-spin" />
+            </div>
+         </template>
+
+         <template v-if="expanded && details">
             <!-- ООО -->
             <template v-if="details.type === 'LLC'">
                <div class="subgroup">
@@ -150,10 +164,6 @@
                </div>
             </template>
          </template>
-
-         <div v-else class="loading-state">
-            <i class="fa-regular fa-circle-notch fa-spin" />
-         </div>
       </div>
    </ModalLayoutBody>
 </template>
@@ -167,6 +177,7 @@ import { onMounted, ref } from 'vue'
 const props = defineProps<{ counterparty: Counterparty }>()
 
 const details = ref<CounterpartyDetails>()
+const expanded = ref(false)
 
 const emit = defineEmits<{ close: [result?: unknown] }>()
 
@@ -187,6 +198,13 @@ onMounted(async () => {
    gap: 0.7rem;
 }
 
+.description {
+   margin: 0;
+   font-size: 0.85rem;
+   color: var(--muted-text);
+   line-height: 1.5;
+}
+
 .card-header {
    display: flex;
    align-items: center;
@@ -195,6 +213,25 @@ onMounted(async () => {
    background: var(--muted-foreground);
    border: 1.5px solid var(--border-color);
    border-radius: var(--border-radius);
+   cursor: pointer;
+   user-select: none;
+   transition: background 0.15s;
+}
+
+.card-header:hover {
+   background: var(--foreground);
+}
+
+.chevron {
+   margin-left: auto;
+   flex-shrink: 0;
+   font-size: 0.75rem;
+   color: var(--muted-text);
+   transition: transform 0.2s ease;
+}
+
+.chevron--open {
+   transform: rotate(180deg);
 }
 
 .type-badge {
