@@ -3,6 +3,7 @@ import type {
    Counterparty,
    CounterpartyDetails,
    CounterpartyUpdate,
+   GetDetails,
    IPDetails,
    IPDetailsCreate,
    LLCDetails,
@@ -47,11 +48,11 @@ export async function getCounterpartyByINN(
 
 export async function getLLCDetails(
    counterpartyId: string
-): Promise<LLCDetails | undefined> {
+): Promise<GetDetails<LLCDetails> | undefined> {
    console.log('get LLC details', counterpartyId)
 
    // GET /api/ref/counterparties/{counterparty_id}/details/llc
-   const res = await refApi.get<LLCDetails>(
+   const res = await refApi.get<GetDetails<LLCDetails>>(
       `/counterparties/llc/${counterpartyId}`
    )
    return res.data
@@ -59,11 +60,11 @@ export async function getLLCDetails(
 
 export async function getIPDetails(
    counterpartyId: string
-): Promise<IPDetails | undefined> {
+): Promise<GetDetails<IPDetails> | undefined> {
    console.log('get IP details', counterpartyId)
 
    // GET /api/ref/counterparties/{counterparty_id}/details/ip
-   const res = await refApi.get<IPDetails>(
+   const res = await refApi.get<GetDetails<IPDetails>>(
       `/counterparties/ip/${counterpartyId}`
    )
    return res.data
@@ -71,11 +72,11 @@ export async function getIPDetails(
 
 export async function getPhysDetails(
    counterpartyId: string
-): Promise<PhysDetails | undefined> {
+): Promise<GetDetails<PhysDetails> | undefined> {
    console.log('get Phys details', counterpartyId)
 
    // GET /api/ref/counterparties/{counterparty_id}/details/phys
-   const res = await refApi.get<PhysDetails>(
+   const res = await refApi.get<GetDetails<PhysDetails>>(
       `/counterparties/phys/${counterpartyId}`
    )
    return res.data
@@ -87,15 +88,15 @@ export async function getCounterpartyDetails(
    switch (counterparty.type) {
       case 'LLC': {
          const data = await getLLCDetails(counterparty.id)
-         return data ? { type: 'LLC', data } : undefined
+         return data ? { type: 'LLC', data: data.details } : undefined
       }
       case 'IP': {
          const data = await getIPDetails(counterparty.id)
-         return data ? { type: 'IP', data } : undefined
+         return data ? { type: 'IP', data: data.details } : undefined
       }
       case 'PHYSIC': {
          const data = await getPhysDetails(counterparty.id)
-         return data ? { type: 'PHYSIC', data } : undefined
+         return data ? { type: 'PHYSIC', data: data.details } : undefined
       }
    }
 }

@@ -96,6 +96,13 @@ export interface PhysDetails {
    address_living: string
 }
 
+export interface GetDetails<T> {
+   additional_okved: any[]
+   bank_accounts: any[]
+   basic_info: any
+   details: T
+}
+
 export type CounterpartyDetails =
    | { type: 'LLC'; data: LLCDetails }
    | { type: 'IP'; data: IPDetails }
