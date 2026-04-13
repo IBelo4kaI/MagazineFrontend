@@ -100,7 +100,7 @@ function field<K extends keyof PersonForm>(key: K, v: unknown) {
 
 const submit = async () => {
    await store.submit()
-   if (store.isValid) emit('close')
+   if (store.isValid) emit('close', store.createdId)
 }
 </script>
 

@@ -137,88 +137,11 @@
                   @button-handler="createPerson"
                />
                <InputUi
-                  label="Основание полномочий"
-                  :model-value="store.llcDetails.director_basis"
-                  @update:model-value="
-                     (v) => store.setDetail('director_basis', v)
-                  "
-               />
-            </div>
-         </div>
-
-         <div class="subgroup">
-            <p class="label">
-               <i class="fa-regular fa-user" />
-               Физическое лицо
-            </p>
-            <div class="grid" style="--cols: 3">
-               <InputUi
-                  label="Фамилия"
-                  :model-value="store.personDetails.last_naem"
-                  :error="store.personErrors.last_naem"
-                  @update:model-value="(v) => store.setPerson('last_naem', v)"
-                  @blur="store.touchPerson('last_naem')"
-               />
-               <InputUi
-                  label="Имя"
-                  :model-value="store.personDetails.name"
-                  :error="store.personErrors.name"
-                  @update:model-value="(v) => store.setPerson('name', v)"
-                  @blur="store.touchPerson('name')"
-               />
-               <InputUi
-                  label="Отчество"
-                  :model-value="store.personDetails.middle_name"
-                  @update:model-value="(v) => store.setPerson('middle_name', v)"
-               />
-            </div>
-            <div class="grid" style="--cols: 3">
-               <InputUi
-                  label="Телефон"
-                  :model-value="store.personDetails.phone_personal"
-                  @update:model-value="
-                     (v) => store.setPerson('phone_personal', v)
-                  "
-               />
-               <InputUi
-                  label="Email"
-                  :model-value="store.personDetails.email_personal"
-                  @update:model-value="
-                     (v) => store.setPerson('email_personal', v)
-                  "
-               />
-               <InputUi
-                  label="Дата рождения"
-                  type="date"
-                  :model-value="store.personDetails.birth_date"
-                  @update:model-value="(v) => store.setPerson('birth_date', v)"
-               />
-            </div>
-         </div>
-
-         <div class="subgroup">
-            <p class="label">
-               <i class="fa-regular fa-briefcase" />
-               Сотрудник
-            </p>
-            <div class="grid" style="--cols: 2">
-               <Autocomplete
-                  label="Физическое лицо"
-                  :options="store.personsOptions"
-                  :model-value="store.employeeDetails.person_id"
-                  label-key="full_name"
-                  value-key="id"
-                  :error="store.employeeErrors.person_id"
-                  :loading="store.personsLoading"
-                  @update:model-value="(v) => store.setEmployee('person_id', v)"
-                  @blur="store.touchEmployee('person_id')"
-                  @focus="async () => await store.searchPersons()"
-                  @button-handler="createPerson"
-               />
-               <InputUi
                   label="Должность"
                   :model-value="store.employeeDetails.position"
+                  :error="store.employeeErrors.position"
                   @update:model-value="(v) => store.setEmployee('position', v)"
+                  @blur="store.touchEmployee('position')"
                />
             </div>
          </div>
@@ -234,12 +157,9 @@ import AddPersonModal from '@/components/modals/AddPersonModal.vue'
 import { useModal } from '@/composables/useModal'
 import { getCompanyByINN } from '@/services/checko'
 import { useCreateCounterpartyStore } from '@/stores/admin/addCounterparty'
-import { useRoute, useRouter } from 'vue-router'
+import { useCreatePersonStore } from '@/stores/admin/addPerson'
 
 const store = useCreateCounterpartyStore()
-
-const router = useRouter()
-const route = useRoute()
 
 const props = withDefaults(
    defineProps<{
@@ -274,7 +194,9 @@ async function fillInn() {
       okfs: d.ОКФС?.Код ?? null,
       okopf: d.ОКОПФ?.Код ?? null,
       okved: d.ОКВЭД ? `${d.ОКВЭД.Код + ' - ' + d.ОКВЭД.Наим}` : null,
-      legal_address: d.ЮрАдрес?.АдресРФ ?? null,
+      legal_address: d.ЮрАдрес?.АдресРФ ?? '',
+      actual_address: ' ',
+      postal_address: ' ',
       date_register: parseCheckoDate(d.ДатаРег),
       tax_system: d.Налоги?.ОсобРежим?.join(', ') ?? null,
    }
@@ -285,17 +207,36 @@ async function fillInn() {
 
    if (d.НаимСокр) store.set('short_name', d.НаимСокр)
    if (d.НаимПолн) store.set('full_name', d.НаимПолн)
+
+   if (d.Руковод.length > 0) {
+      const director = d.Руковод[0]!
+      const person = store.personsOptions.find(
+         (p) => p.full_name == director.ФИО
+      )
+      if (person) {
+         store.setDetail('director_person_id', person.id)
+      } else {
+         const createPersonStore = useCreatePersonStore()
+         const last_name = director.ФИО.split(' ')[0]
+         const name = director.ФИО.split(' ')[1]
+         const middle_name = director.ФИО.split(' ')[2]
+         createPersonStore.setMany({
+            last_naem: last_name,
+            name: name,
+            middle_name: middle_name,
+         })
+         await createPerson()
+      }
+   }
 }
 
 const { open } = useModal()
 
 async function createPerson() {
-   console.log('rds')
-
-   const result = await open(AddPersonModal)
+   const result: string | undefined = await open<string>(AddPersonModal)
 
    if (result) {
-      console.log(result)
+      store.setDetail('director_person_id', result)
    }
 }
 </script>

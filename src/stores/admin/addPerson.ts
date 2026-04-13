@@ -8,6 +8,7 @@ import { ref } from 'vue'
 
 export const useCreatePersonStore = defineStore('create-person', () => {
    const isLoading = ref(false)
+   const createdId = ref<string | null>(null)
 
    // ─── Form ─────────────────────────────────────────────────────────────────
 
@@ -17,7 +18,8 @@ export const useCreatePersonStore = defineStore('create-person', () => {
          isLoading.value = true
 
          try {
-            await createPerson(form.values.value)
+            const res = await createPerson(form.values.value)
+            createdId.value = res.id
          } catch (e) {
             throw e
          } finally {
@@ -28,6 +30,7 @@ export const useCreatePersonStore = defineStore('create-person', () => {
 
    return {
       isLoading,
+      createdId,
       // form
       ...form,
    }

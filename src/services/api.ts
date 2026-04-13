@@ -6,7 +6,7 @@ export const magApi = axios.create({
 })
 
 export const refApi = axios.create({
-   baseURL: 'http://192.168.88.2:8388',
+   baseURL: '/apiref/ref',
    withCredentials: true,
 })
 

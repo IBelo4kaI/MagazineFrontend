@@ -13,15 +13,12 @@ import {
 } from '@/forms/counterparty/schema'
 import type { EmployeeForm } from '@/forms/employee/schema'
 import { physicDetailSchema as employeeFormSchema } from '@/forms/employee/schema'
-import type { PersonForm } from '@/forms/person/schema'
-import { personFormSchema } from '@/forms/person/schema'
 import {
    createCounterparty,
    createIPDetails,
    createLLCDetails,
    createPhysicDetails,
    getCounterparties,
-   getCounterpartyDetails,
 } from '@/services/counterparty'
 import { getPersons } from '@/services/person'
 import { createSupplier } from '@/services/supplier'
@@ -55,9 +52,6 @@ export const useCreateCounterpartyStore = defineStore(
       const counterpartyOptions = ref<Counterparty[]>([])
       const counterpartyLoading = ref(false)
 
-      // const ipDetailsOptions = ref<IPDetails[]>([])
-      // const ipDetailsLoading = ref(false)
-
       const personsOptions = ref<Person[]>([])
       const personsLoading = ref(false)
       const isLoading = ref(false)
@@ -67,12 +61,6 @@ export const useCreateCounterpartyStore = defineStore(
          counterpartyOptions.value = await getCounterparties(query)
          counterpartyLoading.value = false
       }
-
-      // async function searchIpDetails(query?: string) {
-      //    ipDetailsLoading.value = true
-      //    ipDetailsOptions.value = await getIPDetails()
-      //    ipDetailsLoading.value = false
-      // }
 
       async function searchPersons(query?: string) {
          personsLoading.value = true
@@ -106,12 +94,6 @@ export const useCreateCounterpartyStore = defineStore(
          schema: physicDetailSchema,
          onSubmit: async () => {},
       })
-
-      const personForm = useForm({
-         schema: personFormSchema,
-         onSubmit: async () => {},
-      })
-
       const employeeForm = useForm({
          schema: employeeFormSchema,
          onSubmit: async () => {},
@@ -133,12 +115,6 @@ export const useCreateCounterpartyStore = defineStore(
       const physicErrors = computed(() =>
          nullToUndef<PhysicDetailForm>(physicForm.errors.value)
       )
-
-      const personDetails = computed(() => personForm.values.value)
-      const personErrors = computed(() =>
-         nullToUndef<PersonForm>(personForm.errors.value)
-      )
-
       const employeeDetails = computed(() => employeeForm.values.value)
       const employeeErrors = computed(() =>
          nullToUndef<EmployeeForm>(employeeForm.errors.value)
@@ -163,16 +139,6 @@ export const useCreateCounterpartyStore = defineStore(
          if (t === 'LLC') llcForm.touch(key as keyof LLCDetailForm)
          else if (t === 'IP') ipForm.touch(key as keyof IPDetailForm)
          else physicForm.touch(key as keyof PhysicDetailForm)
-      }
-
-      // ─── setPerson / touchPerson ───────────────────────────────────────────────
-
-      function setPerson(key: string, value: unknown): void {
-         personForm.set(key as keyof PersonForm, value as never)
-      }
-
-      function touchPerson(key: string): void {
-         personForm.touch(key as keyof PersonForm)
       }
 
       // ─── setEmployee / touchEmployee ───────────────────────────────────────────
@@ -268,7 +234,6 @@ export const useCreateCounterpartyStore = defineStore(
          llcForm.reset()
          ipForm.reset()
          physicForm.reset()
-         personForm.reset()
          employeeForm.reset()
       }
 
@@ -294,11 +259,6 @@ export const useCreateCounterpartyStore = defineStore(
          ipErrors,
          physicDetails,
          physicErrors,
-         // person form
-         personDetails,
-         personErrors,
-         setPerson,
-         touchPerson,
          // employee form
          employeeDetails,
          employeeErrors,

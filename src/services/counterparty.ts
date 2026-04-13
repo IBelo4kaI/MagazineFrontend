@@ -10,6 +10,7 @@ import type {
    PhysDetails,
    PhysicDetailsCreate,
 } from '@/types/counterparty'
+import { refApi, supplyApi } from './api'
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
 
@@ -111,30 +112,29 @@ export async function getCounterparties(
 ): Promise<Counterparty[]> {
    console.log('get counterparties', query)
 
-   return new Promise((resolve) => {
-      setTimeout(() => {
-         const result = query
-            ? mockCounterparties.filter((c) =>
-                 c.short_name.toLowerCase().includes(query.toLowerCase())
-              )
-            : mockCounterparties
-         resolve(result)
-      }, 300)
-   })
+   const res = await refApi.get<Counterparty[]>(`/counterparties`)
+   return res.data
 }
 
-export async function getCounterpartyById(
-   id: string
-): Promise<Counterparty | undefined> {
-   console.log('get counterparty by id', id)
+export async function getCounterpartyByINN(
+   inn: string
+): Promise<Counterparty[]> {
+   console.log('get counterparties', inn)
 
-   return new Promise((resolve) => {
-      setTimeout(
-         () => resolve(mockCounterparties.find((c) => c.id === id)),
-         300
-      )
+   const res = await refApi.get<Counterparty[]>(`/counterparties/search`, {
+      params: { q: inn },
    })
+   return res.data
 }
+
+// export async function getCounterpartyById(
+//    id: string
+// ): Promise<Counterparty | undefined> {
+//    console.log('get counterparty by id', id)
+
+//    const res = await supplyApi.get<Counterparty>(`/warehouse-categories`)
+//    return res.data
+// }
 
 // ─── GET details ──────────────────────────────────────────────────────────────
 
@@ -144,9 +144,10 @@ export async function getLLCDetails(
    console.log('get LLC details', counterpartyId)
 
    // GET /api/ref/counterparties/{counterparty_id}/details/llc
-   return new Promise((resolve) => {
-      setTimeout(() => resolve(mockLLCDetails[counterpartyId]), 300)
-   })
+   const res = await refApi.get<LLCDetails>(
+      `/counterparties/{counterparty_id}/details/llc`
+   )
+   return res.data
 }
 
 export async function getIPDetails(
@@ -155,9 +156,10 @@ export async function getIPDetails(
    console.log('get IP details', counterpartyId)
 
    // GET /api/ref/counterparties/{counterparty_id}/details/ip
-   return new Promise((resolve) => {
-      setTimeout(() => resolve(mockIPDetails[counterpartyId]), 300)
-   })
+   const res = await refApi.get<IPDetails>(
+      `/counterparties/{counterparty_id}/details/ip`
+   )
+   return res.data
 }
 
 export async function getPhysDetails(
@@ -166,9 +168,10 @@ export async function getPhysDetails(
    console.log('get Phys details', counterpartyId)
 
    // GET /api/ref/counterparties/{counterparty_id}/details/phys
-   return new Promise((resolve) => {
-      setTimeout(() => resolve(mockPhysDetails[counterpartyId]), 300)
-   })
+   const res = await refApi.get<PhysDetails>(
+      `/counterparties/{counterparty_id}/details/phys`
+   )
+   return res.data
 }
 
 export async function getCounterpartyDetails(
@@ -195,40 +198,29 @@ export async function getCounterpartyDetails(
 export async function createCounterparty(
    data: CounterpartyForm
 ): Promise<Counterparty> {
-   console.log('create counterparty', data)
-
-   return new Promise((resolve) => {
-      const created: Counterparty = {
-         id: `${crypto.randomUUID()}`,
-         type: data.type,
-         short_name: data.short_name,
-         full_name: data.full_name,
-         is_internal: data.is_internal,
-         contract_prefix: data.contract_prefix,
-         created_at: new Date().toISOString(),
-         updated_at: new Date().toISOString(),
-      }
-
-      mockCounterparties.push(created)
-      setTimeout(() => resolve(created), 400)
-   })
+   const res = await refApi.post<Counterparty>('/counterparties', data)
+   console.log('create counterparty', res.data)
+   return res.data
 }
 
 export async function createLLCDetails(data: LLCDetailsCreate): Promise<void> {
-   console.log('create LLC details', data)
-   return new Promise((resolve) => setTimeout(() => resolve(), 400))
+   const res = await refApi.post('/counterparties/llc', data)
+   console.log('create counterparty llc', res.data)
+   // return res.data
 }
 
 export async function createIPDetails(data: IPDetailsCreate): Promise<void> {
-   console.log('create IP details', data)
-   return new Promise((resolve) => setTimeout(() => resolve(), 400))
+   const res = await refApi.post('/counterparties/ip', data)
+   console.log('create counterparty ip', res.data)
+   // return res.data
 }
 
 export async function createPhysicDetails(
    data: PhysicDetailsCreate
 ): Promise<void> {
-   console.log('create Physic details', data)
-   return new Promise((resolve) => setTimeout(() => resolve(), 400))
+   const res = await refApi.post('/counterparties/phys', data)
+   console.log('create counterparty phys', res.data)
+   // return res.data
 }
 
 // ─── UPDATE ───────────────────────────────────────────────────────────────────

@@ -1,3 +1,5 @@
+import type { st } from 'vue-router/dist/index-DFCq6eJK.js'
+
 export interface CheckoCodeName {
    Код: string
    Наим: string
@@ -34,6 +36,12 @@ export interface CheckoCompanyData {
    ОКАТО: CheckoCodeName | null
    ОКТМО: CheckoCodeName | null
    Налоги: CheckoTaxInfo | null
+   Руковод: {
+      ФИО: string
+      ИНН: string
+      НаимДолжн: string
+      ВидДолжн: string
+   }[]
 }
 
 export interface CheckoMeta {
