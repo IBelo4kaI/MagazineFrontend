@@ -3,13 +3,16 @@
    <section class="section">
       <div class="fields">
          <div class="grid" style="--cols: 3">
-            <InputUi
-               label="ИНН"
-               :model-value="store.ipDetails.inn"
-               :error="store.ipErrors.inn"
-               @update:model-value="(v) => store.setDetail('inn', v)"
-               @blur="store.touchDetail('inn')"
-            />
+            <div class="field">
+               <InputUi
+                  label="ИНН"
+                  :model-value="store.ipDetails.inn"
+                  :error="store.ipErrors.inn"
+                  @update:model-value="(v) => store.setDetail('inn', v)"
+                  @blur="store.touchDetail('inn')"
+               />
+               <ButtonUI @click="fillInn">Заполнить</ButtonUI>
+            </div>
             <InputUi
                label="ОГРНИП"
                :model-value="store.ipDetails.ogrnip"
@@ -92,7 +95,9 @@
 
 <script lang="ts" setup>
 import Autocomplete from '@/components/Autocomplete.vue'
+import ButtonUI from '@/components/ButtonUI.vue'
 import InputUi from '@/components/InputUi.vue'
+import { getEntrepreneurByINN } from '@/services/checko'
 import { useCreateCounterpartyStore } from '@/stores/admin/addCounterparty'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -107,6 +112,46 @@ const props = withDefaults(
    }>(),
    { short: false }
 )
+
+// Checko returns dates as DD.MM.YYYY — convert to YYYY-MM-DD for <input type="date">
+function parseCheckoDate(raw: string | null): string | null {
+   if (!raw) return null
+   const [day, month, year] = raw.split('.')
+   if (!day || !month || !year) return null
+   return `${year}-${month}-${day}`
+}
+
+async function fillInn() {
+   if (!store.ipDetails.inn || store.ipErrors['inn']) return
+
+   const res = await getEntrepreneurByINN(store.ipDetails.inn)
+   if (res.meta.status !== 'ok') return
+
+   const d = res.data
+
+   const fields: Partial<Record<string, string | null>> = {
+      ogrnip: d.ОГРНИП ?? null,
+      okpo: d.ОКПО ?? null,
+      okved: d.ОКВЭД ? `${d.ОКВЭД.Код} - ${d.ОКВЭД.Наим}` : null,
+      okopf: d.ОКОПФ?.Код ?? null,
+      okfs: d.ОКФС?.Код ?? null,
+      okogu: d.ОКОГУ?.Код ?? null,
+      okato: d.ОКАТО?.Код ?? null,
+      oktmo: d.ОКТМО?.Код ?? null,
+      date_register: parseCheckoDate(d.ДатаРег),
+   }
+
+   for (const [key, value] of Object.entries(fields)) {
+      if (value !== null) store.setDetail(key, value)
+   }
+
+   if (d.ФИО) {
+      const shortName = `${d.ТипСокр ?? 'ИП'} ${d.ФИО}`
+      const fullName = `${d.Тип ?? 'Индивидуальный предприниматель'} ${d.ФИО}`
+      store.set('short_name', shortName)
+      store.set('full_name', fullName)
+   }
+}
 
 function createPerson() {
    router.push({

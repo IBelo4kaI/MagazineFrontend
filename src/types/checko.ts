@@ -55,3 +55,36 @@ export interface CheckoCompanyResponse {
    data: CheckoCompanyData
    meta: CheckoMeta
 }
+
+export interface CheckoEntrepreneurData {
+   ОГРНИП: string | null
+   ИНН: string | null
+   ОКПО: string | null
+   ДатаРег: string | null
+   ДатаОГРНИП: string | null
+   ФИО: string | null
+   Тип: string | null
+   ТипСокр: string | null
+   ОКВЭД: CheckoOkved | null
+   ОКОПФ: CheckoCodeName | null
+   ОКФС: CheckoCodeName | null
+   ОКОГУ: CheckoCodeName | null
+   ОКАТО: CheckoCodeName | null
+   ОКТМО: CheckoCodeName | null
+   Налоги: CheckoTaxInfo | null
+}
+
+export interface CheckoEntrepreneurResponse {
+   data: CheckoEntrepreneurData
+   meta: CheckoMeta
+}
+
+export interface CheckoPersonData {
+   ИНН: string | null
+   ФИО: string | null
+}
+
+export interface CheckoPersonResponse {
+   data: CheckoPersonData
+   meta: CheckoMeta
+}

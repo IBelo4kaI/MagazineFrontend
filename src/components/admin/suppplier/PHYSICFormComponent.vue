@@ -74,11 +74,14 @@
                <i class="fa-regular fa-location-dot" />
                Адреса и ИНН
             </p>
-            <InputUi
-               label="ИНН"
-               :model-value="store.physicDetails.inn"
-               @update:model-value="(v) => store.setDetail('inn', v)"
-            />
+            <div class="field">
+               <InputUi
+                  label="ИНН"
+                  :model-value="store.physicDetails.inn"
+                  @update:model-value="(v) => store.setDetail('inn', v)"
+               />
+               <ButtonUI @click="fillInn">Заполнить</ButtonUI>
+            </div>
             <div class="grid" style="--cols: 2">
                <InputUi
                   label="Адрес регистрации"
@@ -126,7 +129,9 @@
 
 <script lang="ts" setup>
 import Autocomplete from '@/components/Autocomplete.vue'
+import ButtonUI from '@/components/ButtonUI.vue'
 import InputUi from '@/components/InputUi.vue'
+import { getPersonByINN } from '@/services/checko'
 import { useCreateCounterpartyStore } from '@/stores/admin/addCounterparty'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -141,6 +146,19 @@ const props = withDefaults(
    }>(),
    { short: false }
 )
+
+async function fillInn() {
+   if (!store.physicDetails.inn) return
+
+   const res = await getPersonByINN(store.physicDetails.inn)
+   if (res.meta.status !== 'ok') return
+
+   const d = res.data
+   if (d.ФИО) {
+      store.set('short_name', d.ФИО)
+      store.set('full_name', d.ФИО)
+   }
+}
 
 function createPerson() {
    router.push({
